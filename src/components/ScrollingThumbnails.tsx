@@ -23,33 +23,26 @@ const row2Thumbs = [
   "/images/row2-9.avif",
 ];
 
-// Row 3 is placeholder for now
-const placeholderThumb = (i: number) => (
-  <div
-    key={`ph-${i}`}
-    className="flex-shrink-0 w-[320px] h-[180px] rounded-lg bg-secondary/60 border border-border"
-  />
-);
+const row3Thumbs = [
+  "/images/row3-1.jpg",
+  "/images/row3-2.jpg",
+  "/images/row3-3.jpg",
+  "/images/row3-4.jpg",
+  "/images/row3-5.jpg",
+  "/images/row3-6.jpg",
+  "/images/row3-7.jpg",
+  "/images/row3-8.jpg",
+  "/images/row3-9.jpg",
+  "/images/row3-10.jpg",
+];
 
 interface ScrollRowProps {
   images: string[];
   direction: "left" | "right";
-  placeholders?: boolean;
 }
 
-const ScrollRow = ({ images, direction, placeholders }: ScrollRowProps) => {
+const ScrollRow = ({ images, direction }: ScrollRowProps) => {
   const animClass = direction === "left" ? "animate-scroll-left" : "animate-scroll-right";
-
-  if (placeholders) {
-    const items = Array.from({ length: 8 });
-    return (
-      <div className="overflow-hidden w-full">
-        <div className={`flex gap-4 ${animClass}`} style={{ width: "max-content" }}>
-          {[...items, ...items].map((_, i) => placeholderThumb(i))}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="overflow-hidden w-full">
@@ -73,7 +66,7 @@ const ScrollingThumbnails = () => {
     <div className="flex flex-col gap-4 w-full">
       <ScrollRow images={row1Thumbs} direction="left" />
       <ScrollRow images={row2Thumbs} direction="right" />
-      <ScrollRow images={[]} direction="left" placeholders />
+      <ScrollRow images={row3Thumbs} direction="left" />
     </div>
   );
 };
