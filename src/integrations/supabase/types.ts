@@ -97,6 +97,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      deduct_credits: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: undefined
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -2,24 +2,46 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Sparkles, Plus, CreditCard, ImageIcon, LogOut } from "lucide-react";
+import { Sparkles, Plus, CreditCard, ImageIcon, LogOut, Shield } from "lucide-react";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
-  const [credits, setCredits] = useState(10);
+  const [credits, setCredits] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       if (!session) navigate("/login");
-      else setUser(session.user);
+      else {
+        setUser(session.user);
+        loadProfile(session.user.id);
+      }
     });
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) navigate("/login");
-      else setUser(session.user);
+      else {
+        setUser(session.user);
+        loadProfile(session.user.id);
+      }
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const loadProfile = async (userId: string) => {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("credits")
+      .eq("id", userId)
+      .single();
+    if (profile) setCredits(profile.credits);
+
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+    if (roles?.some((r: any) => r.role === "admin")) setIsAdmin(true);
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -30,7 +52,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Top bar */}
       <nav className="border-b border-border bg-card">
         <div className="container flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
@@ -44,6 +65,13 @@ const Dashboard = () => {
               <Sparkles className="h-4 w-4 text-primary" />
               <span className="font-semibold text-foreground">{credits} Credits</span>
             </div>
+            {isAdmin && (
+              <Link to="/admin">
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Shield className="h-4 w-4" /> Admin
+                </Button>
+              </Link>
+            )}
             <Button variant="ghost" size="icon" onClick={handleLogout}>
               <LogOut className="h-4 w-4" />
             </Button>
@@ -51,7 +79,6 @@ const Dashboard = () => {
         </div>
       </nav>
 
-      {/* Content */}
       <main className="container py-12">
         <h1 className="font-display text-3xl font-bold text-foreground mb-2">
           Welcome back 👋
