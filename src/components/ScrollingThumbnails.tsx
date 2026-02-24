@@ -11,7 +11,19 @@ const row1Thumbs = [
   "/images/thumb10.avif",
 ];
 
-// Rows 2 and 3 are placeholders for now
+const row2Thumbs = [
+  "/images/row2-1.avif",
+  "/images/row2-2.avif",
+  "/images/row2-3.avif",
+  "/images/row2-4.avif",
+  "/images/row2-5.avif",
+  "/images/row2-6.avif",
+  "/images/row2-7.avif",
+  "/images/row2-8.avif",
+  "/images/row2-9.avif",
+];
+
+// Row 3 is placeholder for now
 const placeholderThumb = (i: number) => (
   <div
     key={`ph-${i}`}
@@ -60,7 +72,7 @@ const ScrollingThumbnails = () => {
   return (
     <div className="flex flex-col gap-4 w-full">
       <ScrollRow images={row1Thumbs} direction="left" />
-      <ScrollRow images={[]} direction="right" placeholders />
+      <ScrollRow images={row2Thumbs} direction="right" />
       <ScrollRow images={[]} direction="left" placeholders />
     </div>
   );
