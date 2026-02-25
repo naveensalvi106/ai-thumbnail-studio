@@ -9,6 +9,7 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import CreateThumbnail from "./pages/CreateThumbnail";
 import AdminPanel from "./pages/AdminPanel";
+import BuyCredits from "./pages/BuyCredits";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create" element={<CreateThumbnail />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/buy-credits" element={<BuyCredits />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

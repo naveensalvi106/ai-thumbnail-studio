@@ -67,10 +67,24 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Deduct credits
+    // Check credits first
+    const { data: profile } = await serviceClient
+      .from("profiles")
+      .select("credits")
+      .eq("id", userId)
+      .single();
+
+    if (!profile || profile.credits < 1) {
+      return new Response(JSON.stringify({ error: "Insufficient credits" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Deduct 1 credit
     await serviceClient.rpc("deduct_credits", {
       p_user_id: userId,
-      p_amount: 10,
+      p_amount: 1,
     });
 
     // Send email notification to admin
