@@ -42,7 +42,9 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          face_reaction_url: string | null
           id: string
+          main_image_url: string | null
           reference_urls: string[] | null
           result_url: string | null
           status: string
@@ -53,7 +55,9 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          face_reaction_url?: string | null
           id?: string
+          main_image_url?: string | null
           reference_urls?: string[] | null
           result_url?: string | null
           status?: string
@@ -64,7 +68,9 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          face_reaction_url?: string | null
           id?: string
+          main_image_url?: string | null
           reference_urls?: string[] | null
           result_url?: string | null
           status?: string

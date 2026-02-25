@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     const userId = claimsData.claims.sub;
     const userEmail = claimsData.claims.email;
 
-    const { title, description, reference_urls } = await req.json();
+    const { title, description, face_reaction_url, main_image_url } = await req.json();
 
     // Insert the thumbnail request
     const serviceClient = createClient(
@@ -54,7 +54,8 @@ Deno.serve(async (req) => {
         user_id: userId,
         title,
         description,
-        reference_urls: reference_urls || [],
+        face_reaction_url: face_reaction_url || null,
+        main_image_url: main_image_url || null,
         status: "pending",
       })
       .select()
@@ -109,7 +110,8 @@ Deno.serve(async (req) => {
               <p><strong>From:</strong> ${userEmail}</p>
               <p><strong>Title:</strong> ${title}</p>
               <p><strong>Description:</strong> ${description || "N/A"}</p>
-              <p><strong>Reference URLs:</strong> ${reference_urls?.join(", ") || "None"}</p>
+              <p><strong>Face Reaction:</strong> ${face_reaction_url ? `<a href="${face_reaction_url}">View</a>` : "None"}</p>
+              <p><strong>Main Image:</strong> ${main_image_url ? `<a href="${main_image_url}">View</a>` : "None"}</p>
               <p><strong>Request ID:</strong> ${request.id}</p>
               <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
             `,
