@@ -36,11 +36,8 @@ const Dashboard = () => {
       .single();
     if (profile) setCredits(profile.credits);
 
-    const { data: roles } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
-    if (roles?.some((r: any) => r.role === "admin")) setIsAdmin(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user?.email === "naveensalvi213@gmail.com") setIsAdmin(true);
   };
 
   const handleLogout = async () => {
