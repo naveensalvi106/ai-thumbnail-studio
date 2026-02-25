@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const CreateThumbnail = () => {
   const [user, setUser] = useState<any>(null);
+  const [credits, setCredits] = useState<number | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [refUrls, setRefUrls] = useState("");
@@ -19,8 +20,17 @@ const CreateThumbnail = () => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/login");
-      else setUser(session.user);
+      if (!session) { navigate("/login"); return; }
+      setUser(session.user);
+      supabase.from("profiles").select("credits").eq("id", session.user.id).single()
+        .then(({ data }) => {
+          if (data && data.credits < 1) {
+            toast({ title: "No credits", description: "You need credits to create thumbnails.", variant: "destructive" });
+            navigate("/buy-credits");
+          } else if (data) {
+            setCredits(data.credits);
+          }
+        });
     });
   }, [navigate]);
 
@@ -76,7 +86,7 @@ const CreateThumbnail = () => {
           Create Thumbnail
         </h1>
         <p className="text-muted-foreground mb-8">
-          Describe your thumbnail and we'll create it for you. Costs 10 credits.
+          Describe your thumbnail and we'll create it for you. Costs 1 credit. You have {credits ?? '...'} credits.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6 bg-card border border-border rounded-xl p-6">
@@ -116,7 +126,7 @@ const CreateThumbnail = () => {
           <Button type="submit" className="w-full gap-2" disabled={loading}>
             {loading ? "Submitting..." : (
               <>
-                <Send className="h-4 w-4" /> Submit Request (10 Credits)
+                <Send className="h-4 w-4" /> Submit Request (1 Credit)
               </>
             )}
           </Button>
