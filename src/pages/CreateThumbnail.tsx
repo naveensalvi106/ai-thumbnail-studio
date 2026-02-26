@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { Sparkles, ArrowLeft, ImagePlus, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import gsap from "gsap";
 
 const CreateThumbnail = () => {
   const [user, setUser] = useState<any>(null);
@@ -22,6 +23,7 @@ const CreateThumbnail = () => {
   const { toast } = useToast();
   const faceInputRef = useRef<HTMLInputElement>(null);
   const mainInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -39,37 +41,28 @@ const CreateThumbnail = () => {
     });
   }, [navigate]);
 
+  useEffect(() => {
+    if (user && formRef.current) {
+      gsap.fromTo(formRef.current, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" });
+    }
+  }, [user]);
+
   const handleFileSelect = (file: File | null, type: "face" | "main") => {
     if (!file) return;
-    if (type === "face") {
-      setFaceFile(file);
-      setFacePreview(URL.createObjectURL(file));
-    } else {
-      setMainFile(file);
-      setMainPreview(URL.createObjectURL(file));
-    }
+    if (type === "face") { setFaceFile(file); setFacePreview(URL.createObjectURL(file)); }
+    else { setMainFile(file); setMainPreview(URL.createObjectURL(file)); }
   };
 
   const clearFile = (type: "face" | "main") => {
-    if (type === "face") {
-      setFaceFile(null);
-      setFacePreview(null);
-      if (faceInputRef.current) faceInputRef.current.value = "";
-    } else {
-      setMainFile(null);
-      setMainPreview(null);
-      if (mainInputRef.current) mainInputRef.current.value = "";
-    }
+    if (type === "face") { setFaceFile(null); setFacePreview(null); if (faceInputRef.current) faceInputRef.current.value = ""; }
+    else { setMainFile(null); setMainPreview(null); if (mainInputRef.current) mainInputRef.current.value = ""; }
   };
 
   const uploadFile = async (file: File, userId: string, prefix: string): Promise<string | null> => {
     const ext = file.name.split(".").pop();
     const path = `${userId}/${prefix}-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("thumbnail-uploads").upload(path, file);
-    if (error) {
-      console.error("Upload error:", error);
-      return null;
-    }
+    if (error) { console.error("Upload error:", error); return null; }
     const { data } = supabase.storage.from("thumbnail-uploads").getPublicUrl(path);
     return data.publicUrl;
   };
@@ -82,7 +75,6 @@ const CreateThumbnail = () => {
     try {
       let faceUrl: string | null = null;
       let mainUrl: string | null = null;
-
       if (faceFile) faceUrl = await uploadFile(faceFile, user.id, "face");
       if (mainFile) mainUrl = await uploadFile(mainFile, user.id, "main");
 
@@ -100,7 +92,6 @@ const CreateThumbnail = () => {
         }
         setLoading(false);
       } else {
-        // Stay on loading screen — navigate after a delay to simulate generation
         setTimeout(() => {
           toast({ title: "Request submitted!", description: "We'll get back to you soon." });
           navigate("/dashboard");
@@ -116,144 +107,113 @@ const CreateThumbnail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6">
-        <div className="relative">
-          <Sparkles className="h-16 w-16 text-primary animate-pulse" />
-          <div className="absolute inset-0 h-16 w-16 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6 relative">
+        <div className="glow-orb w-96 h-96 bg-primary/20 top-1/4 left-1/3" />
+        <div className="glow-orb w-72 h-72 bg-accent/20 bottom-1/4 right-1/3" />
+        <div className="relative z-10 text-center">
+          <div className="relative inline-block mb-6">
+            <Sparkles className="h-16 w-16 text-primary animate-pulse" />
+            <div className="absolute inset-0 h-16 w-16 rounded-full border-4 border-primary/30 border-t-primary animate-spin" />
+          </div>
+          <h2 className="text-2xl font-bold text-foreground animate-pulse tracking-tighter">
+            AntiGeneric is generating the thumbnail...
+          </h2>
+          <p className="text-muted-foreground text-sm mt-2 font-light">This may take a moment</p>
         </div>
-        <h2 className="font-display text-2xl font-bold text-foreground animate-pulse">
-          AntiGeneric is generating the thumbnail...
-        </h2>
-        <p className="text-muted-foreground text-sm">This may take a moment</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="border-b border-border bg-card">
+    <div className="min-h-screen bg-background relative">
+      <div className="glow-orb w-80 h-80 bg-primary/10 top-0 right-0" />
+
+      <nav className="glass-strong border-b border-border/50">
         <div className="container flex h-16 items-center justify-between">
           <Link to="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="h-4 w-4" />
-            <span className="text-sm">Back to Dashboard</span>
+            <span className="text-sm font-light">Back</span>
           </Link>
           <Link to="/" className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-primary" />
-            <span className="font-display text-xl font-bold text-foreground">
-              AntiGeneric <span className="text-primary">AI</span>
+            <span className="text-xl font-bold tracking-tighter text-foreground">
+              Anti<span className="gradient-text">Generic</span>
             </span>
           </Link>
-          <div className="flex items-center gap-2 rounded-lg bg-secondary px-4 py-2 text-sm">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <span className="font-semibold text-foreground">{credits ?? "..."} Credits</span>
+          <div className="glass flex items-center gap-2 rounded-xl px-4 py-2 text-sm">
+            <span className="font-semibold text-foreground">{credits ?? "..."}</span>
+            <span className="text-muted-foreground font-light">Credits</span>
           </div>
         </div>
       </nav>
 
-      <main className="container py-12 max-w-2xl">
-        <h1 className="font-display text-3xl font-bold text-foreground mb-2">
+      <main className="container py-12 max-w-2xl relative z-10">
+        <h1 className="text-3xl font-bold text-foreground mb-2 tracking-tighter">
           Create Thumbnail
         </h1>
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground mb-8 font-light">
           Fill in the details and we'll generate your thumbnail. Costs 1 credit.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6 bg-card border border-border rounded-xl p-6">
-          {/* Image uploads */}
+        <form ref={formRef} onSubmit={handleSubmit} className="space-y-6 glass glow-box rounded-2xl p-8 opacity-0">
           <div className="grid sm:grid-cols-2 gap-4">
-            {/* Face Reaction */}
             <div className="space-y-2">
-              <Label>Face Reaction (optional)</Label>
+              <Label className="font-light">Face Reaction (optional)</Label>
               <div
-                className="relative border-2 border-dashed border-border rounded-lg h-40 flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors overflow-hidden"
+                className="relative border-2 border-dashed border-border/50 rounded-xl h-40 flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors overflow-hidden"
                 onClick={() => faceInputRef.current?.click()}
               >
                 {facePreview ? (
                   <>
                     <img src={facePreview} alt="Face reaction" className="h-full w-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); clearFile("face"); }}
-                      className="absolute top-2 right-2 bg-background/80 rounded-full p-1 hover:bg-background"
-                    >
+                    <button type="button" onClick={(e) => { e.stopPropagation(); clearFile("face"); }} className="absolute top-2 right-2 bg-background/80 rounded-full p-1 hover:bg-background">
                       <X className="h-4 w-4 text-foreground" />
                     </button>
                   </>
                 ) : (
                   <div className="text-center text-muted-foreground">
                     <ImagePlus className="h-8 w-8 mx-auto mb-1" />
-                    <p className="text-xs">Click to upload</p>
+                    <p className="text-xs font-light">Click to upload</p>
                   </div>
                 )}
               </div>
-              <input
-                ref={faceInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleFileSelect(e.target.files?.[0] || null, "face")}
-              />
+              <input ref={faceInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e.target.files?.[0] || null, "face")} />
             </div>
 
-            {/* Main Image */}
             <div className="space-y-2">
-              <Label>Main Image (optional)</Label>
+              <Label className="font-light">Main Image (optional)</Label>
               <div
-                className="relative border-2 border-dashed border-border rounded-lg h-40 flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors overflow-hidden"
+                className="relative border-2 border-dashed border-border/50 rounded-xl h-40 flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors overflow-hidden"
                 onClick={() => mainInputRef.current?.click()}
               >
                 {mainPreview ? (
                   <>
                     <img src={mainPreview} alt="Main image" className="h-full w-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); clearFile("main"); }}
-                      className="absolute top-2 right-2 bg-background/80 rounded-full p-1 hover:bg-background"
-                    >
+                    <button type="button" onClick={(e) => { e.stopPropagation(); clearFile("main"); }} className="absolute top-2 right-2 bg-background/80 rounded-full p-1 hover:bg-background">
                       <X className="h-4 w-4 text-foreground" />
                     </button>
                   </>
                 ) : (
                   <div className="text-center text-muted-foreground">
                     <ImagePlus className="h-8 w-8 mx-auto mb-1" />
-                    <p className="text-xs">Click to upload</p>
+                    <p className="text-xs font-light">Click to upload</p>
                   </div>
                 )}
               </div>
-              <input
-                ref={mainInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleFileSelect(e.target.files?.[0] || null, "main")}
-              />
+              <input ref={mainInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileSelect(e.target.files?.[0] || null, "main")} />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. How I Made $10K in 30 Days"
-              required
-            />
+            <Label htmlFor="title" className="font-light">Title *</Label>
+            <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. How I Made $10K in 30 Days" required className="bg-muted/30 border-border/50 rounded-xl" />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Thumbnail Description *</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe the style, mood, elements you want in the thumbnail..."
-              rows={4}
-              required
-            />
+            <Label htmlFor="description" className="font-light">Thumbnail Description *</Label>
+            <Textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Describe the style, mood, elements you want..." rows={4} required className="bg-muted/30 border-border/50 rounded-xl" />
           </div>
 
-          <Button type="submit" className="w-full gap-2" disabled={loading}>
+          <Button type="submit" className="w-full gap-2 gradient-btn border-0 rounded-xl font-semibold py-5" disabled={loading}>
             <Sparkles className="h-4 w-4" /> Generate Thumbnail (1 Credit)
           </Button>
         </form>
