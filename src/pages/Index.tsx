@@ -11,17 +11,21 @@ const Index = () => {
 
       {/* Hero Section */}
       <section className="relative pt-24 pb-8 overflow-hidden">
-        {/* Hero text above thumbnails */}
-        <div className="container text-center mb-10">
+        {/* Ambient glow blobs */}
+        <div className="absolute top-20 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-40 right-1/4 w-80 h-80 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="container text-center mb-10 relative z-10">
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-display font-bold leading-tight tracking-tight text-foreground max-w-4xl mx-auto">
-            Create premium, high-CTR thumbnails in just minutes.
+            Create premium, high-CTR thumbnails{" "}
+            <span className="gradient-text">in just minutes.</span>
           </h1>
           <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
             Stop using generic thumbnails. Let AntiGeneric AI craft scroll-stopping visuals that get clicks.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link to="/signup">
-              <Button size="lg" className="gap-2 text-base px-8">
+              <Button size="lg" className="gradient-btn gap-2 text-base px-8 font-bold border-0">
                 Start Creating <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
@@ -31,20 +35,19 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Scrolling thumbnail rows */}
         <div className="mt-4">
           <ScrollingThumbnails />
         </div>
 
-        {/* Gradient overlay at bottom */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent pointer-events-none" />
       </section>
 
       {/* Features Section */}
-      <section className="py-20">
-        <div className="container">
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.03] to-transparent pointer-events-none" />
+        <div className="container relative z-10">
           <h2 className="text-3xl md:text-4xl font-display font-bold text-center text-foreground mb-16">
-            Why creators choose <span className="text-primary">AntiGeneric</span>
+            Why creators choose <span className="gradient-text">AntiGeneric</span>
           </h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             <FeatureCard
@@ -85,8 +88,8 @@ const FeatureCard = ({
   title: string;
   description: string;
 }) => (
-  <div className="rounded-xl border border-border bg-card p-8 text-center hover:glow-border transition-all duration-300">
-    <div className="inline-flex items-center justify-center rounded-lg bg-primary/10 p-3 text-primary mb-5">
+  <div className="glow-box rounded-xl p-8 text-center transition-all duration-300 hover:scale-[1.02]">
+    <div className="inline-flex items-center justify-center rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 p-3 text-primary mb-5">
       {icon}
     </div>
     <h3 className="font-display text-xl font-semibold text-card-foreground mb-3">{title}</h3>
