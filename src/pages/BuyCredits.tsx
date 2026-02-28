@@ -17,7 +17,7 @@ const BuyCredits = () => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/login");
+      if (!session) navigate("/signup");
       else {
         setUser(session.user);
         supabase.from("profiles").select("credits").eq("id", session.user.id).single()

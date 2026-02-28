@@ -25,7 +25,7 @@ const CreateThumbnail = () => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) { navigate("/login"); return; }
+      if (!session) { navigate("/signup"); return; }
       setUser(session.user);
       supabase.from("profiles").select("credits").eq("id", session.user.id).single()
         .then(({ data }) => {
