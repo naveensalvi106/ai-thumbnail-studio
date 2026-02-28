@@ -12,15 +12,13 @@ const Dashboard = () => {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      if (!session) navigate("/signup");
-      else {
+      if (session) {
         setUser(session.user);
         loadProfile(session.user.id);
       }
     });
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/signup");
-      else {
+      if (session) {
         setUser(session.user);
         loadProfile(session.user.id);
       }
@@ -45,7 +43,11 @@ const Dashboard = () => {
     navigate("/");
   };
 
-  if (!user) return null;
+  if (!user) return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <p className="text-muted-foreground">Loading dashboard...</p>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background">

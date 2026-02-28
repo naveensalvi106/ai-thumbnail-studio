@@ -18,7 +18,7 @@ const Navbar = () => {
               Dashboard
             </Button>
           </Link>
-          <Link to="/signup">
+          <Link to="/dashboard">
             <Button size="sm" className="gradient-btn border-0 font-semibold">Get Started</Button>
           </Link>
         </div>
