@@ -13,9 +13,9 @@ const Navbar = () => {
           </span>
         </Link>
         <div className="flex items-center gap-3">
-          <Link to="/login">
+          <Link to="/dashboard">
             <Button variant="ghost" size="sm">
-              Log in
+              Dashboard
             </Button>
           </Link>
           <Link to="/signup">

@@ -46,7 +46,7 @@ const AdminPanel = () => {
 
   const checkAdminAndLoad = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) { navigate("/login"); return; }
+    if (!session) { navigate("/signup"); return; }
 
     // Check by email
     if (session.user.email !== ADMIN_EMAIL) {

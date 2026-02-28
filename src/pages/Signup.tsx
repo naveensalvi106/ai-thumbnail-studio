@@ -59,8 +59,7 @@ const Signup = () => {
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
-          <Link to="/login" className="text-primary hover:underline">Sign in</Link>
+          Already have an account? Check your email to verify, then continue from Dashboard.
         </p>
       </div>
     </div>

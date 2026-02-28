@@ -12,14 +12,14 @@ const Dashboard = () => {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      if (!session) navigate("/login");
+      if (!session) navigate("/signup");
       else {
         setUser(session.user);
         loadProfile(session.user.id);
       }
     });
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/login");
+      if (!session) navigate("/signup");
       else {
         setUser(session.user);
         loadProfile(session.user.id);
